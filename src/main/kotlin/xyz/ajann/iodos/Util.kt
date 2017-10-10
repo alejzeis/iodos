@@ -5,11 +5,19 @@ import org.slf4j.LoggerFactory
 import org.springframework.core.io.DefaultResourceLoader
 import java.io.*
 import org.apache.commons.io.FileUtils
+import org.json.simple.JSONObject
 import java.io.IOException
 
-
-
 val resourceLoader = DefaultResourceLoader()
+
+fun getServerQueryJSON(): String {
+    val json = JSONObject()
+    json.put("software", IodosServer.SOFTWARE)
+    json.put("version", IodosServer.SOFTWARE_VERSION)
+    json.put("apiMajor", IodosServer.API_VERSION_MAJOR)
+    json.put("apiMinor", IodosServer.API_VERISON_MINOR)
+    return json.toJSONString()
+}
 
 fun getConfigurationDirectory(): String {
     val useSystemDirs = System.getenv("IODOS_USE_SYSTEM_DIRS").toBoolean()

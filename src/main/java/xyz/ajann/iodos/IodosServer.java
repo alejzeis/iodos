@@ -27,22 +27,18 @@ public class IodosServer {
 
     @Getter private static IodosServer instance;
 
-    @Getter protected ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    @Getter protected static ThreadPoolTaskExecutor threadPoolTaskExecutor;
     @Getter protected Logger logger;
     @Getter protected IodosServerConfiguration config;
     @Getter protected DBManager dbManager;
 
     protected IodosServer() {
+        if(IodosServer.instance != null) return;
+
         IodosServer.instance = this;
 
         // Stop MongoDB from logging all the DEBUG info unless an environment variable is set
         UtilKt.setMongoLogLevels();
-
-        try {
-            System.out.println(UtilKt.getResourceContents("header.txt"));
-        } catch(IOException e) {
-            // Don't worry about failing to print the header logo
-        }
 
         // Setup our ThreadPool, initalize to same amount of threads as cores, and then max size set to amount of cores * 2
         threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
@@ -51,6 +47,12 @@ public class IodosServer {
         threadPoolTaskExecutor.setQueueCapacity(16);
         threadPoolTaskExecutor.setThreadNamePrefix("AsyncThread-");
         threadPoolTaskExecutor.initialize();
+
+        try {
+            System.out.println(UtilKt.getResourceContents("header.txt"));
+        } catch(IOException e) {
+            // Don't worry about failing to print the header logo
+        }
 
         this.logger = LoggerFactory.getLogger("IodosServer");
 
@@ -79,6 +81,7 @@ public class IodosServer {
     }
 
     public static void main(String[] args) {
+        new IodosServer();
         SpringApplication.run(IodosServer.class, args);
     }
 }
