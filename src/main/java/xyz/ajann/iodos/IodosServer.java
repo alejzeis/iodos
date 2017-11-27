@@ -11,6 +11,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.Security;
+import java.util.Random;
 
 @SpringBootApplication
 @EnableScheduling
@@ -25,7 +27,9 @@ public class IodosServer {
     public static final String ROOT_PATH = "/iodos/api";
     public static final String ROOT_API_PATH = ROOT_PATH + "/v/" + API_VERSION_MAJOR + "/" + API_VERISON_MINOR;
 
-    @Getter private static IodosServer instance;
+    public static final long serverID = new Random().nextLong();
+
+    @Getter protected static IodosServer instance;
 
     @Getter protected static ThreadPoolTaskExecutor threadPoolTaskExecutor;
     @Getter protected Logger logger;
@@ -34,6 +38,9 @@ public class IodosServer {
 
     protected IodosServer() {
         if(IodosServer.instance != null) return;
+
+        // Add BouncyCastle as a Java Security provider
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
         IodosServer.instance = this;
 
@@ -60,6 +67,7 @@ public class IodosServer {
 
         try {
             this.loadConfig();
+            logger.info("Loaded configuration.");
         } catch(IOException e) {
             logger.error("Failed to load configuration! IOException");
             e.printStackTrace(System.err);

@@ -1,6 +1,7 @@
 package xyz.ajann.iodos
 
 import ch.qos.logback.classic.Level
+import org.apache.commons.codec.digest.DigestUtils
 import org.slf4j.LoggerFactory
 import org.springframework.core.io.DefaultResourceLoader
 import java.io.*
